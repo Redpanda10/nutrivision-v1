@@ -277,13 +277,14 @@ export default function ScanScreen() {
 
       {/* STICKY MACRO FOOTER */}
       {selectedFoods.length > 0 && (
+        
         <View style={styles.footer}>
           <View style={styles.macroRow}>
             <Macro val={totals.calories.toFixed(0)} label="Cals" />
-            <Macro val={totals.protein.toFixed(2)} label="Prot" />
-            <Macro val={totals.carbs.toFixed(2)} label="Carb" />
+            <Macro val={totals.protein.toFixed(2)} label="Protein" />
+            <Macro val={totals.carbs.toFixed(2)} label="Carbs" />
             <Macro val={totals.fat.toFixed(2)} label="Fat" />
-            <Macro val={totals.sugar.toFixed(2)} label="Sugr" />
+            <Macro val={totals.sugar.toFixed(2)} label="Sugar" />
           </View>
           <TouchableOpacity onPress={handleSaveMeal} style={styles.saveBtn}>
   {saving ? (
@@ -293,6 +294,7 @@ export default function ScanScreen() {
   )}
 </TouchableOpacity>
         </View>
+        
       )}
 
       {/* PORTION ADJUST MODAL */}
@@ -349,13 +351,16 @@ export default function ScanScreen() {
 }
 
 const Macro = ({ val, label }: any) => (
+  <>
   <View style={{ alignItems: "center" }}>
     <Text style={styles.macroVal}>{val}</Text>
     <Text style={styles.macroLabel}>{label}</Text>
   </View>
+  </>
 );
 
 const ModalStat = ({ val, label }: any) => (
+
   <View style={styles.modalStat}>
     <Text style={styles.modalStatVal}>{val}</Text>
     <Text style={styles.modalStatLabel}>{label}</Text>
@@ -385,7 +390,7 @@ const styles = StyleSheet.create({
   activeCard: { borderWidth: 2, borderColor: COLORS.primary, backgroundColor: "#f0fdf4" },
   foodName: { fontSize: 18, fontWeight: "800", color: COLORS.text },
   foodInfo: { fontSize: 13, color: COLORS.muted, marginTop: 4 },
-  footer: { position: "absolute", bottom: 0, width: "100%",  paddingBottom: Platform.OS === "ios" ? 90 : 70,backgroundColor: "#fff", padding: 24, borderTopLeftRadius: 30, borderTopRightRadius: 30, elevation: 20, shadowColor: "#000", shadowOpacity: 0.2, shadowRadius: 15 },
+  footer: { position: "absolute",bottom:25, width: "100%",  paddingBottom: Platform.OS === "ios" ? 90 : 70,backgroundColor: "#fff", padding: 24, borderTopLeftRadius: 30, borderTopRightRadius: 30, elevation: 20, shadowColor: "#000", shadowOpacity: 0.2, shadowRadius: 15 },
   macroRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 20 },
   macroVal: { fontSize: 20, fontWeight: "900", color: COLORS.text },
   macroLabel: { fontSize: 11, color: COLORS.muted, textTransform: "uppercase", fontWeight: "700", marginTop: 2 },

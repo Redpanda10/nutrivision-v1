@@ -41,6 +41,7 @@ const helmet = require("helmet");
 const path = require("path");
 
 const connectDB = require("./config/db");
+require("dotenv").config();
 
 /* =========================
    ROUTES
