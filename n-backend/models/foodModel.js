@@ -937,6 +937,9 @@ const foodHistorySchema =
         type: nutritionSchema,
         required: true,
       },
+      description:{
+        type:String,
+      },
 
       safetyCheck: {
         isSafe: {

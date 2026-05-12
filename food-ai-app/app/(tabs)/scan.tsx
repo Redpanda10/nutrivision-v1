@@ -89,9 +89,11 @@ export default function ScanScreen() {
   /* ================= HANDLERS ================= */
 
   const scanFood = async () => {
+
     if (!image) return;
-    console.log(image);
+
     setLoading(true);
+
     try {
       const token = await AsyncStorage.getItem("token");
       const formData = new FormData();
@@ -101,23 +103,22 @@ export default function ScanScreen() {
         type: "image/jpeg",
       } as any);
 
-      // console.log("message :",formData)
 
       const res = await axios.post(`${BASE_URL}/api/food/scan`, formData, {
         headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${token}` },
       });
 
       setFoods(res.data.detectedFoods || []);
+      
+      const allAllergens = res.data.detectedFoods?.flatMap((f: any) => f.safetyCheck?.allergensMatched || []) || [];
       setAnalysisMeta({
-        allergens: res.data.allergens || [],
+        allergens: [...new Set(allAllergens)],
         tips: res.data.healthTips || [],
       });
 
-      setDescription(res.data.detectedFoods||[]);
+         
 
-      console.log(description);
-
-      console.log(res.data.allergens);
+    
       
       if (res.data.annotatedImage) {
         setAnnotatedImage(res.data.annotatedImage);
@@ -157,6 +158,8 @@ export default function ScanScreen() {
     setModalVisible(false);
     Keyboard.dismiss();
   };
+
+
   const handleSaveMeal = async () => {
   if (!selectedFoods.length) return;
 
@@ -278,6 +281,7 @@ export default function ScanScreen() {
         {/* DETECTED FOOD LIST */}
         {foods.map((item) => {
           const isSelected = selectedFoods.find((f) => f.id === item.id);
+          const isExpanded = expandedFoodId === item.id;
           return (
             <TouchableOpacity
               key={item.id}
@@ -287,8 +291,9 @@ export default function ScanScreen() {
               <View style={{ flex: 1 }}>
                 <Text style={styles.foodName}>{item.name}</Text>
                 <Text style={styles.foodInfo}>
-                   {isSelected ? `${isSelected.userWeight}g` : "100g base"} • {item.nutrition?.caloriesKcal} kcal/100g
+                   {isSelected ? `${isSelected.userWeight}g` : "100g base"} • {item.nutrition?.caloriesKcal} kcal
                 </Text>
+                
               </View>
               <TouchableOpacity onPress={() => toggleSelect(item)}>
                 <Ionicons
@@ -298,11 +303,6 @@ export default function ScanScreen() {
                 />
               </TouchableOpacity>
               
-              <View >
-                <Text style= {styles.descriptionText}>
-                  Click me !  {item.description}
-                  </Text>
-                  </View>
             </TouchableOpacity>
             
           );
@@ -321,6 +321,7 @@ export default function ScanScreen() {
             <Macro val={totals.fat.toFixed(2)} label="Fat" />
             <Macro val={totals.sugar.toFixed(2)} label="Sugar" />
           </View>
+          
           <TouchableOpacity onPress={handleSaveMeal} style={styles.saveBtn}>
   {saving ? (
     <ActivityIndicator color="#fff" />
@@ -331,42 +332,103 @@ export default function ScanScreen() {
         </View>
         
       )}
+<SafeAreaView>
+      <Modal visible={modalVisible} transparent animationType="slide">
+  <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    
+    <ScrollView>
+    <View style={styles.modalOverlay}>
+      {/* <ScrollView> */}
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === "ios" ? "padding" : "height"} 
+        style={{ width: "100%" }}
+      >
+        
+        <View style={styles.modalContent}>
+        <SafeAreaView>
+          {editingFood?.description && (
+            <View style={styles.descriptionBox}>
+              <Ionicons name="sparkles" size={16} color={COLORS.primary} style={{ marginRight: 8 }} />
+              <Text style={styles.descriptionText}>
+                {editingFood.description}
+              </Text>
+            </View>
+          )}
+</SafeAreaView>
 
-      {/* PORTION ADJUST MODAL */}
-      <Modal visible={modalVisible} transparent animationType="fade">
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.modalOverlay}>
-            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ width: "100%" }}>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalTitle}>Adjust Portion</Text>
-                <Text style={styles.modalSub}>{editingFood?.name}</Text>
-                
-                <View style={styles.inputContainer}>
-                  <TextInput
-                    style={styles.weightInput}
-                    keyboardType="numeric"
-                    value={weightInput}
-                    onChangeText={setWeightInput}
-                    autoFocus
-                  />
-                  <Text style={styles.unit}>grams</Text>
-                </View>
+          {/* Visual Handle for "Sheet" feel */}
+          <View style={styles.modalHandle} />
 
-                <View style={styles.modalNutritionGrid}>
-                  <ModalStat val={calc(editingFood?.nutrition?.caloriesKcal, weightInput).toFixed(0)} label="Kcal" />
-                  <ModalStat val={calc(editingFood?.nutrition?.proteinG, weightInput).toFixed(1) + "g"} label="Protein" />
-                  <ModalStat val={calc(editingFood?.nutrition?.carbsG, weightInput).toFixed(1) + "g"} label="Carbs" />
-                  <ModalStat val={calc(editingFood?.nutrition?.fatG, weightInput).toFixed(1) + "g"} label="Fat" />
-                </View>
-
-                <TouchableOpacity style={styles.modalConfirm} onPress={updateWeight}>
-                  <Text style={styles.btnText}>Apply Adjustment</Text>
-                </TouchableOpacity>
-              </View>
-            </KeyboardAvoidingView>
+          <Text style={styles.modalTitle}>Adjust Portion</Text>
+          <Text style={styles.modalSub}>{editingFood?.name}</Text>
+          
+          <View style={styles.inputSection}>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.weightInput}
+                keyboardType="numeric"
+                value={weightInput}
+                onChangeText={setWeightInput}
+                autoFocus
+                placeholderTextColor={COLORS.muted}
+              />
+              <Text style={styles.unitText}>grams</Text>
+            </View>
           </View>
-        </TouchableWithoutFeedback>
-      </Modal>
+
+          <View style={styles.modalNutritionGrid}>
+            <ModalStat 
+              icon="flame" 
+              val={calc(editingFood?.nutrition?.caloriesKcal, weightInput).toFixed(0)} 
+              label="Kcal" 
+            />
+            <ModalStat 
+              icon="fitness" 
+              val={calc(editingFood?.nutrition?.proteinG, weightInput).toFixed(1) + "g"} 
+              label="Protein" 
+            />
+            <ModalStat 
+              icon="leaf" 
+              val={calc(editingFood?.nutrition?.carbsG, weightInput).toFixed(1) + "g"} 
+              label="Carbs" 
+            />
+            <ModalStat 
+              icon="water" 
+              val={calc(editingFood?.nutrition?.fatG, weightInput).toFixed(1) + "g"} 
+              label="Fat" 
+            />
+          </View>
+
+          
+
+          <TouchableOpacity 
+            style={styles.modalConfirm} 
+            onPress={updateWeight}
+            activeOpacity={0.8}
+          >
+            <LinearGradient
+              colors={[COLORS.primary, COLORS.primaryDark]}
+              style={styles.gradientBtn}
+            >
+              <Text style={styles.btnText}>Apply Adjustment</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            onPress={() => setModalVisible(false)} 
+            style={styles.closeTextBtn}
+          >
+            <Text style={styles.cancelText}>Not now</Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
+      {/* </ScrollView> */}
+    </View>
+    </ScrollView>
+    
+  </TouchableWithoutFeedback>
+</Modal>
+</SafeAreaView>
 
       {/* CAMERA OVERLAY */}
       {cameraOpen && (
@@ -455,4 +517,131 @@ const styles = StyleSheet.create({
   modalConfirm: { backgroundColor: COLORS.primary, padding: 20, borderRadius: 20, alignItems: "center" },
   closeCam: { position: "absolute", top: 60, right: 25 },
   shutter: { position: "absolute", bottom: 60, alignSelf: "center", width: 80, height: 80, borderRadius: 40, backgroundColor: "#fff", borderWidth: 6, borderColor: COLORS.primary },
+modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(15, 23, 42, 0.75)", // Deep slate overlay
+    justifyContent: "flex-end",
+  },
+  modalContent: {
+    backgroundColor: COLORS.card,
+    borderTopLeftRadius: 36,
+    borderTopRightRadius: 36,
+    paddingHorizontal: 24,
+    paddingTop: 12,
+    paddingBottom: Platform.OS === 'ios' ? 40 : 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 20,
+  },
+  modalHandle: {
+    width: 40,
+    height: 4,
+    backgroundColor: "#e2e8f0",
+    borderRadius: 2,
+    alignSelf: "center",
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: "900",
+    color: COLORS.text,
+    textAlign: "center",
+    letterSpacing: -0.5,
+  },
+  modalSub: {
+    color: COLORS.primary,
+    fontWeight: "700",
+    fontSize: 16,
+    textAlign: "center",
+    marginTop: 4,
+    marginBottom: 24,
+    textTransform: "capitalize",
+  },
+  inputSection: {
+    alignItems: "center",
+    marginBottom: 24,
+  },
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    backgroundColor: "#f8fafc",
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: "#f1f5f9",
+  },
+  weightInput: {
+    fontSize: 48,
+    fontWeight: "900",
+    color: COLORS.text,
+    textAlign: "center",
+  },
+  unitText: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: COLORS.muted,
+    marginLeft: 8,
+  },
+  modalNutritionGrid: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 24,
+  },
+  modalStat: {
+    alignItems: "center",
+    backgroundColor: "#f0fdf4", // Light green tint
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderRadius: 16,
+    width: '23%',
+  },
+  modalStatVal: {
+    fontSize: 15,
+    fontWeight: "800",
+    color: COLORS.text,
+    marginTop: 4,
+  },
+  modalStatLabel: {
+    fontSize: 10,
+    color: COLORS.muted,
+    fontWeight: "700",
+    textTransform: "uppercase",
+  },
+  descriptionBox: {
+    flexDirection: 'row',
+    backgroundColor: "#f1f5f9",
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 24,
+  },
+  descriptionText: {
+    flex: 1,
+    fontSize: 13,
+    lineHeight: 18,
+    color: COLORS.muted,
+    fontStyle: "italic",
+  },
+  modalConfirm: {
+    borderRadius: 18,
+    overflow: 'hidden',
+    marginBottom: 12,
+  },
+  gradientBtn: {
+    paddingVertical: 18,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  closeTextBtn: {
+    paddingVertical: 8,
+    alignItems: "center",
+  },
+  cancelText: {
+    color: COLORS.muted,
+    fontWeight: "600",
+    fontSize: 15,
+  },
+
 });
