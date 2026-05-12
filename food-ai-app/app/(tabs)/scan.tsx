@@ -11,6 +11,7 @@ import {
   StatusBar,
   Platform,
   Modal,
+  ImageBackground,
   TextInput,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
@@ -53,6 +54,12 @@ export default function ScanScreen() {
   const [selectedFoods, setSelectedFoods] = useState<any[]>([]);
   const [analysisMeta, setAnalysisMeta] = useState<any>(null); // For allergens/tips
 
+//////////////////////
+
+
+  const [expandedFoodId, setExpandedFoodId] = useState<string | null>(null);
+  
+  
   /* ================= CALCULATIONS ================= */
 
   const calc = (baseVal: number = 0, weight: string) => {
@@ -78,10 +85,12 @@ export default function ScanScreen() {
   const [editingFood, setEditingFood] = useState<any>(null);
   const [weightInput, setWeightInput] = useState("100");
 
+
   /* ================= HANDLERS ================= */
 
   const scanFood = async () => {
     if (!image) return;
+    console.log(image);
     setLoading(true);
     try {
       const token = await AsyncStorage.getItem("token");
@@ -92,6 +101,8 @@ export default function ScanScreen() {
         type: "image/jpeg",
       } as any);
 
+      // console.log("message :",formData)
+
       const res = await axios.post(`${BASE_URL}/api/food/scan`, formData, {
         headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${token}` },
       });
@@ -101,6 +112,12 @@ export default function ScanScreen() {
         allergens: res.data.allergens || [],
         tips: res.data.healthTips || [],
       });
+
+      setDescription(res.data.detectedFoods||[]);
+
+      console.log(description);
+
+      console.log(res.data.allergens);
       
       if (res.data.annotatedImage) {
         setAnnotatedImage(res.data.annotatedImage);
@@ -163,7 +180,7 @@ export default function ScanScreen() {
         caloriesKcal: Number(totals.calories.toFixed(2)),
         proteinG: Number(totals.protein.toFixed(2)),
         carbsG: Number(totals.carbs.toFixed(2)),
-        faGt: Number(totals.fat.toFixed(2)),
+        fatG: Number(totals.fat.toFixed(2)),
         sugarG: Number(totals.sugar.toFixed(2)),
       },
       createdAt: new Date().toISOString(),
@@ -197,6 +214,16 @@ export default function ScanScreen() {
     
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
+
+      <ImageBackground 
+        source={{ uri: 'https://images.unsplash.com/photo-1614594975525-e45190c55d0b?q=80&w=1964&auto=format&fit=crop' }} 
+        style={StyleSheet.absoluteFillObject}
+        blurRadius={10}
+        resizeMode="cover"
+      >
+        
+
+
       <ScrollView contentContainerStyle={{ paddingBottom: 260 }}>
         <LinearGradient colors={[COLORS.primary, COLORS.primaryDark]} style={styles.header}>
           <Text style={styles.headerTitle}>NutriVision AI</Text>
@@ -270,10 +297,18 @@ export default function ScanScreen() {
                   color={isSelected ? COLORS.primary : "#cbd5e1"}
                 />
               </TouchableOpacity>
+              
+              <View >
+                <Text style= {styles.descriptionText}>
+                  Click me !  {item.description}
+                  </Text>
+                  </View>
             </TouchableOpacity>
+            
           );
         })}
       </ScrollView>
+
 
       {/* STICKY MACRO FOOTER */}
       {selectedFoods.length > 0 && (
@@ -346,6 +381,7 @@ export default function ScanScreen() {
           }} />
         </CameraView>
       )}
+      </ImageBackground>
     </View>
   );
 }
@@ -368,6 +404,9 @@ const ModalStat = ({ val, label }: any) => (
 );
 
 const styles = StyleSheet.create({
+  absoluteFillObject:{
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+  },
   container: { flex: 1, backgroundColor: COLORS.background },
   header: { padding: 30, paddingTop: 60, borderBottomLeftRadius: 32, borderBottomRightRadius: 32, marginBottom: 20 },
   headerTitle: { color: "#fff", fontSize: 26, fontWeight: "900" },
@@ -386,6 +425,13 @@ const styles = StyleSheet.create({
   tagWrapper: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
   allergenTag: { backgroundColor: "#fee2e2", paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10 },
   tagText: { color: COLORS.danger, fontWeight: "700", fontSize: 12 },
+  descriptionText: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: COLORS.text,
+    textAlign: "justify",
+    fontStyle: "italic", // Gives it a "curated" AI feel
+  },
   foodCard: { backgroundColor: "#fff", marginHorizontal: 20, marginTop: 12, padding: 18, borderRadius: 22, flexDirection: "row", alignItems: "center", elevation: 2 },
   activeCard: { borderWidth: 2, borderColor: COLORS.primary, backgroundColor: "#f0fdf4" },
   foodName: { fontSize: 18, fontWeight: "800", color: COLORS.text },

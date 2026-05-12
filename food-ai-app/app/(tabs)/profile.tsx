@@ -83,6 +83,13 @@ export default function Profile() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
+        <TouchableOpacity onPress={()=>{router.replace("/LineGraphExample")}}>
+          <View>
+            <Text>
+              Button here
+            </Text>
+          </View>
+        </TouchableOpacity>
 
         {/* HEADER */}
         <View style={styles.header}>
@@ -147,7 +154,7 @@ export default function Profile() {
           <Text style={styles.version}>NutriVision v1.0.0</Text>
           <Text style={styles.tagline}>Smart AI Food Tracking</Text>
         </View>
-
+        
       </ScrollView>
     </SafeAreaView>
   );

@@ -48,7 +48,7 @@ const COLORS = {
 
   protein: "#16A34A",
   carbs: "#3B82F6",
-  fat: "#F97316",
+  fat: "#F59E0B",
 
   sugar: "#EF4444",
 

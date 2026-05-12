@@ -742,11 +742,54 @@ const fetchNutrition = async (foodName) => {
   }
 };
 
+
+const { GoogleGenAI } = require("@google/genai");
+
+// Initialize with your Gemini API Key
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+const fetchDescription = async (foodName) => {
+  try {
+    let aiDescription = "Description not available right now will be updated soon.";
+    
+    // Initialize the model
+    const model = "gemini-3.1-flash-lite"; 
+
+    const prompt = `You are an expert in Nepali cuisine. Write a simple description for ${foodName}. 
+            Include: Ingredients (if any), taste, cultural importance, how it's eaten, popularity, one fact, and in simple words.
+            If you are unaware of the food then simply say 'I currently do not have more information about this food.'`;
+
+    // Generate content
+    const response = await ai.models.generateContent({
+      model: model,
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      config: {
+        maxOutputTokens: 300, // Increased from 50 to allow for the full description requested
+        temperature: 0.7,
+      },
+    });
+
+    // Gemini returns text via the .text property
+    const Description = response.candidates?.[0]?.content?.parts?.[0]?.text;;
+
+    return Description || aiDescription;
+
+  } catch (error) {
+    console.log("Description Error:", error.message);
+    return null;
+  }
+};
+
 /* =========================
    SCAN FOOD
 ========================= */
 
 exports.scanFood = async (req, res) => {
+
+  const requestone = req.body;
+
+  console.log(requestone);
+
   let uploadedFilePath;
 
   try {
@@ -754,7 +797,9 @@ exports.scanFood = async (req, res) => {
       return res.status(401).json({
         message: "Unauthorized",
       });
+      
     }
+    
 
     if (!req.file) {
       return res.status(400).json({
@@ -763,6 +808,7 @@ exports.scanFood = async (req, res) => {
     }
 
     uploadedFilePath = path.resolve(req.file.path);
+
 
     const user = await User.findById(req.user.id);
 
@@ -774,12 +820,21 @@ exports.scanFood = async (req, res) => {
 
     const aiResult = await runYOLO(uploadedFilePath);
 
+    // console.log(aiResult)
+    console.log(aiResult.foods)
+
     const detections = Array.isArray(aiResult)
       ? aiResult
       : aiResult?.detections ||
-        aiResult?.results ||
-        aiResult?.predictions ||
+        // aiResult?.results ||
+        // aiResult?.predictions ||
         [];
+
+        // detections = [
+//   { name: "dal_bhat", confidence: 0.5 },
+//   { name: "bhat", confidence: 0.4 },
+//   { name: "dal_bhat", confidence: 0.6 }
+// ]
 
     if (!detections.length) {
       return res.status(200).json({
@@ -788,21 +843,34 @@ exports.scanFood = async (req, res) => {
       });
     }
 
+    // ["dal_bhat", "bhat", "dal_bhat"]
+
     const uniqueFoods = [
       ...new Set(
         detections.map((d) => d.name).filter(Boolean)
       ),
+
+      //removes the duplicates by set and null values by filter and ... : array  
     ];
+
+    // console.log(uniqueFoods)
 
     const detectedFoods = await Promise.all(
       uniqueFoods.map(async (food, index) => {
         const match = detections.find(
           (d) => d.name === food
         );
-
+        
         const nutrition =
           (await fetchNutrition(food)) ||
           emptyNutrition;
+
+
+        const description = (await fetchDescription(food))||" ";
+
+        console.log(description);
+        
+ 
 
         return {
           id: index + 1,
@@ -815,10 +883,9 @@ exports.scanFood = async (req, res) => {
             : 0,
 
           nutrition,
+          description: description,
 
-          safetyCheck: buildSafetyCheck(user, [
-            food,
-          ]),
+          safetyCheck: buildSafetyCheck(user, [food,]),
         };
       })
     );
@@ -826,6 +893,8 @@ exports.scanFood = async (req, res) => {
     return res.status(200).json({
       success: true,
       detectedFoods,
+
+      image : req.image,
 
       annotatedImage: aiResult?.annotatedImage
         ? `data:image/jpeg;base64,${aiResult.annotatedImage}`
@@ -1185,3 +1254,67 @@ exports.deleteHistoryItem = async (
     });
   }
 };
+
+
+// import { HfInference } from "@huggingface/inference";
+// import dotenv from "dotenv";
+
+// dotenv.config();
+
+// // Initialize Hugging Face with your token from .env
+// const hf = new HfInference(process.env.HUGGINGFACEHUB_API_TOKEN);
+
+// export const getFoodAnalysis = async (req, res) => {
+//     try {
+//         // 1. Get prediction data from your YOLO/TF model logic
+//         // In a real app, 'req.body' would contain results from your model
+//         const { label, confidence } = req.body; 
+
+//         // 2. Logic gate: Confidence check (Mirroring your Python logic)
+//         if (confidence < 0.95) {
+//             return res.status(200).json({
+//                 success: false,
+//                 message: "Food not recognized. Please try another image."
+//             });
+//         }
+
+//         // 3. Construct the prompt for Hugging Face
+//         const prompt = `
+//         You are an expert in Nepali cuisine. Write a simple and friendly food description in English.
+//         Food: ${label}
+        
+//         Include:
+//         - List the ingredients that are used to make the food.
+//         - How Nepalis commonly eat it.
+//         - Where it is popular.
+//         - One interesting fact.
+//         - Finally give nutritional information (protein, carbohydrate, fat, calorie) per 100gm.
+//         - If you are unaware of the food, simply say 'I currently do not have more information about this food.'
+//         `;
+
+//         // 4. Call Hugging Face API
+//         const response = await hf.chatCompletion({
+//             model: "mistralai/Mistral-7B-Instruct-v0.2", // Or "meta-llama/Meta-Llama-3-8B"
+//             messages: [
+//                 { role: "system", content: "You are a helpful culinary expert." },
+//                 { role: "user", content: prompt }
+//             ],
+//             max_tokens: 500,
+//             temperature: 0.7,
+//         });
+
+//         const description = response.choices[0].message.content;
+
+//         // 5. Return the result
+//         res.status(200).json({
+//             success: true,
+//             food: label,
+//             confidence: (confidence * 100).toFixed(2) + "%",
+//             description: description.trim()
+//         });
+
+//     } catch (error) {
+//         console.error("Backend Error:", error);
+//         res.status(500).json({ success: false, error: "AI Generation failed" });
+//     }
+// };

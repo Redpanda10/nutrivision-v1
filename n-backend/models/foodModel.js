@@ -748,9 +748,8 @@ const nutritionMicroSchema =
    NUTRITION
 ========================= */
 
-const nutritionSchema =
-  new mongoose.Schema(
-    {
+const nutritionSchema = new mongoose.Schema({
+
       caloriesKcal: {
         type: Number,
         min: 0,
@@ -890,7 +889,9 @@ const foodHistorySchema =
       },
 
       capturedImage: {
+
         type: {
+          
           url: {
             type: String,
             trim: true,
