@@ -285,7 +285,7 @@ Dashboard & Analytics
 ## Clone Repository
 
 ```bash
-git clone https://github.com/Redpanda10/NutriVision.git
+git clone https://github.com/Redpanda10/nutrivision-v1.git
 ```
 
 ## Frontend Setup
