@@ -1,7 +1,10 @@
+// const { lookupService } = require("dns");
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
+
+  gender:{type:String, enum:["male","female","other"]},
 
   email: {
     type: String,
@@ -36,6 +39,13 @@ const userSchema = new mongoose.Schema({
 
   otp: { type: String, default: undefined },
   otpExpire: { type: Date, default: undefined },
+
+  goalType:{
+    type: String,
+    enum:["gain", "loose" , "maintain"],
+    default: "maintain",
+    // requried : true
+  },
 
   resetToken: String,
   resetTokenExpire: Date

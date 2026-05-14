@@ -83,7 +83,7 @@ export default function Profile() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <TouchableOpacity onPress={()=>{router.replace("/LineGraphExample")}}>
+        <TouchableOpacity onPress={()=>{router.push("/(onboarding)/health-profile")}}>
           <View>
             <Text>
               Button here

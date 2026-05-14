@@ -756,7 +756,7 @@ const fetchDescription = async (foodName) => {
     const model = "gemini-3.1-flash-lite"; 
 
     const prompt = `You are an expert in Nepali cuisine. Write a simple description for ${foodName}. 
-            Include: Ingredients (if any), taste, cultural importance, how it's eaten, popularity, one fact, and in simple words.
+            Include: Ingredients (if any), taste, cultural importance, how it's eaten, one fact, and in simple words.
             If you are unaware of the food then simply say 'I currently do not have more information about this food.'`;
 
     // Generate content

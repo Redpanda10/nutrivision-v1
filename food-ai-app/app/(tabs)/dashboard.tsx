@@ -245,6 +245,17 @@ export default function Dashboard() {
             Daily Calories
           </Text>
 
+           {(totals.caloriesKcal ?? 0) >
+            (goals.caloriesKcal ?? 50) ? (
+              <Text style={styles.exceeded}>
+                Exceeded
+              </Text>
+            ) : (
+              <Text style={styles.good}>
+                Good
+              </Text>
+            )}
+
           <Text style={styles.calorieMain}>
             {totals.caloriesKcal.toFixed(0)}
           </Text>

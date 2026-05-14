@@ -377,30 +377,68 @@ exports.updateProfile = async (req, res) => {
 
 exports.updateGoals = async (req, res) => {
   try {
-    const { caloriesKcal, proteinG, carbsG, fatG, sugarG } = req.body;
+    const userId = req.user.id;
 
-    const user = await User.findById(req.user.id);
+    const {
+      name,
+      gender,
+      healthProfile,
+    } = req.body;
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        name,
+        gender,
 
-    user.goals = {
-      caloriesKcal: caloriesKcal ?? user.goals.caloriesKcal,
-      proteinG: proteinG ?? user.goals.proteinG,
-      carbsG: carbsG ?? user.goals.carbsG,
-      fatG: fatG ?? user.goals.fatG,
-      sugarG: sugarG ?? user.goals.sugarG,
-    };
+        goalType:
+          healthProfile.weightGoal || "maintain",
 
-    await user.save();
+        healthProfile: {
+          age: healthProfile.age,
+          weightKg: healthProfile.weightKg,
+          heightCm: healthProfile.heightCm,
+          allergies:
+            healthProfile.allergies || [],
+        },
 
-    res.json({
-      message: "Goals updated",
-      goals: user.goals,
+        goals: {
+          caloriesKcal:
+            healthProfile.dailyCalorieGoal,
+
+          proteinG:
+            healthProfile.proteinGoalG,
+
+          carbsG:
+            healthProfile.carbsGoalG,
+
+          fatG:
+            healthProfile.fatGoalG,
+
+          sugarG:
+            healthProfile.sugarGoalG,
+        },
+      },
+      {
+        returnDocument: "after",
+        runValidators: true,
+      }
+    ).select("-password");
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user: updatedUser,
     });
+  } catch (error) {
+    console.error(
+      "UpdateGoals Error:",
+      error.message
+    );
 
-  } catch (err) {
-    res.status(500).json({ message: "Error updating goals" });
+    res.status(500).json({
+      success: false,
+      message: "Failed to update profile",
+    });
   }
 };

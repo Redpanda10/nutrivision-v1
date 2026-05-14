@@ -332,10 +332,10 @@ export default function ScanScreen() {
         </View>
         
       )}
-<SafeAreaView>
+  
       <Modal visible={modalVisible} transparent animationType="slide">
-  <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-    
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <SafeAreaView>
     <ScrollView>
     <View style={styles.modalOverlay}>
       {/* <ScrollView> */}
@@ -354,7 +354,7 @@ export default function ScanScreen() {
               </Text>
             </View>
           )}
-</SafeAreaView>
+        </SafeAreaView>
 
           {/* Visual Handle for "Sheet" feel */}
           <View style={styles.modalHandle} />
@@ -425,10 +425,10 @@ export default function ScanScreen() {
       {/* </ScrollView> */}
     </View>
     </ScrollView>
-    
+    </SafeAreaView>
   </TouchableWithoutFeedback>
 </Modal>
-</SafeAreaView>
+
 
       {/* CAMERA OVERLAY */}
       {cameraOpen && (
