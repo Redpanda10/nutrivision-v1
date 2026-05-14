@@ -1005,30 +1005,4 @@ Your support helps us improve and motivates future development! 🚀
 
 # 📄 License
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
-### What this means:
-- ✅ You can use this project for personal and commercial use
-- ✅ You can modify and distribute the code
-- ✅ You must include the license notice
-- ✅ No liability or warranty
-
----
-
-# 🙏 Acknowledgments
-
-- **YOLO** by Ultralytics for object detection
-- **Google Gemini AI** for AI insights
-- **USDA FoodData Central** for nutrition data
-- **React Native & Expo** community
-- **All contributors** who have helped improve this project
-
----
-
-<p align="center">
-  Made with ❤️ by <a href="https://github.com/Redpanda10">Mohit Singh Budal</a>
-</p>
-
-<p align="center">
-  <sub>⭐ Star us on GitHub — it helps!</sub>
-</p>
+This project is licensed under the MIT License.
