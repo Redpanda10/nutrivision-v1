@@ -27,6 +27,7 @@ const HistoryGraph = ({ data = [], filter = "today" }) => {
         // Weekly Bucket (e.g., "Week 1")
         const day = dateObj.getDate();
         key = `W${Math.ceil(day / 7)}`;
+        
       } else {
         // Default: Date Bucket (e.g., "May 12")
         key = dateObj.toLocaleDateString("en-US", { month: "short", day: "numeric" });

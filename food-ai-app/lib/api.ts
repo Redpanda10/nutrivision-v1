@@ -1,12 +1,12 @@
 import axios from "axios";
 import { Platform } from "react-native";
 
-let defaultBaseURL = "http://192.168.16.1:5000";
+// let defaultBaseURL = "http://192.168.16.100:5000";
 
-// On Android emulator, localhost refers to the emulator itself.
-if (Platform.OS === "android") {
-  defaultBaseURL = "http://10.0.2.2:5000";
-}
+// // On Android emulator, localhost refers to the emulator itself.
+// if (Platform.OS === "android") {
+//   defaultBaseURL = "http://10.0.2.2:5000";
+// }
 
 const baseURL =
   process.env.EXPO_PUBLIC_API_URL ;
