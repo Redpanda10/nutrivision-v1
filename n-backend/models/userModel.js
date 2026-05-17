@@ -1,4 +1,4 @@
-// const { lookupService } = require("dns");
+
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({

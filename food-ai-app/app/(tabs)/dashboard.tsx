@@ -272,7 +272,6 @@ export default function Dashboard() {
           </Text>
         </View>
 
-        {/* ================= SUGAR TRACKER ================= */}
 
         <View style={styles.sugarCard}>
           <View style={styles.row}>
@@ -307,9 +306,8 @@ export default function Dashboard() {
           </Text>
         </View>
 
-        {/* ================= WATER TRACKER ================= */}
 
-        <View style={styles.waterCard}>
+        {/* <View style={styles.waterCard}>
           <View style={styles.row}>
             <Text style={styles.waterTitle}>
               Water Intake
@@ -341,9 +339,8 @@ export default function Dashboard() {
             Goal:{" "}
             {((goals.waterMl ?? 3000) / 1000).toFixed(1)}L
           </Text>
-        </View>
+        </View> */}
 
-        {/* ================= MACRO PIE ================= */}
 
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>
@@ -370,7 +367,6 @@ export default function Dashboard() {
           )}
         </View>
 
-        {/* ================= AI TIPS ================= */}
 
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>
@@ -388,7 +384,6 @@ export default function Dashboard() {
   );
 }
 
-/* ================= STYLES ================= */
 
 const styles = StyleSheet.create({
   container: {

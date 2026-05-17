@@ -52,7 +52,7 @@ export default function ScanScreen() {
 
   const [foods, setFoods] = useState<any[]>([]);
   const [selectedFoods, setSelectedFoods] = useState<any[]>([]);
-  const [analysisMeta, setAnalysisMeta] = useState<any>(null); // For allergens/tips
+  const [analysisMeta, setAnalysisMeta] = useState<any>(null); 
 
 //////////////////////
 
@@ -60,7 +60,6 @@ export default function ScanScreen() {
   const [expandedFoodId, setExpandedFoodId] = useState<string | null>(null);
   
   
-  /* ================= CALCULATIONS ================= */
 
   const calc = (baseVal: number = 0, weight: string) => {
     const w = parseFloat(weight) || 0;
@@ -86,7 +85,6 @@ export default function ScanScreen() {
   const [weightInput, setWeightInput] = useState("100");
 
 
-  /* ================= HANDLERS ================= */
 
   const scanFood = async () => {
 
@@ -116,10 +114,7 @@ export default function ScanScreen() {
         tips: res.data.healthTips || [],
       });
 
-         
-
-    
-      
+        
       if (res.data.annotatedImage) {
         setAnnotatedImage(res.data.annotatedImage);
       }
@@ -198,7 +193,7 @@ export default function ScanScreen() {
 
     Alert.alert("Success", "Meal saved!");
 
-    // clear AFTER success
+   
     setSelectedFoods([]);
     setFoods([]);
     setImage(null);
@@ -235,7 +230,6 @@ export default function ScanScreen() {
 
         
 
-        {/* IMAGE PREVIEW AREA */}
         {!image ? (
           <View style={styles.uploadRow}>
             <TouchableOpacity style={styles.uploadCard} onPress={() => setCameraOpen(true)}>
@@ -266,7 +260,6 @@ export default function ScanScreen() {
           </View>
         )}
 
-        {/* ALLERGEN WARNINGS */}
         {analysisMeta?.allergens?.length > 0 && (
           <View style={styles.metaSection}>
             <Text style={styles.metaTitle}>⚠️ Allergen Alert</Text>
@@ -278,7 +271,6 @@ export default function ScanScreen() {
           </View>
         )}
 
-        {/* DETECTED FOOD LIST */}
         {foods.map((item) => {
           const isSelected = selectedFoods.find((f) => f.id === item.id);
           const isExpanded = expandedFoodId === item.id;
@@ -310,7 +302,6 @@ export default function ScanScreen() {
       </ScrollView>
 
 
-      {/* STICKY MACRO FOOTER */}
       {selectedFoods.length > 0 && (
         
         <View style={styles.footer}>
@@ -356,7 +347,6 @@ export default function ScanScreen() {
           )}
         </SafeAreaView>
 
-          {/* Visual Handle for "Sheet" feel */}
           <View style={styles.modalHandle} />
 
           <Text style={styles.modalTitle}>Adjust Portion</Text>
@@ -422,7 +412,7 @@ export default function ScanScreen() {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
-      {/* </ScrollView> */}
+      
     </View>
     </ScrollView>
     </SafeAreaView>

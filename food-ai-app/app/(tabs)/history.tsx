@@ -19,9 +19,6 @@ import HistoryGraph from "../../components/HistoryGraph";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-/* =========================
-   SKELETON LOADER
-========================= */
 function SkeletonCard() {
   const opacity = useRef(new Animated.Value(0.3)).current;
   useEffect(() => {
@@ -48,7 +45,7 @@ function SkeletonCard() {
 }
 
 export default function HistoryScreen() {
-  // Pull needsRefresh and setNeedsRefresh from your store
+
   const { foods, setFoods, needsRefresh, setNeedsRefresh } = useFoodStore();
   
   const [loading, setLoading] = useState(false);
@@ -80,13 +77,10 @@ export default function HistoryScreen() {
       setRefreshing(false);
     }
   };
-
-  // 1. RUN ONCE ON MOUNT
   useEffect(() => {
     fetchHistory(activeFilter, true);
   }, []);
 
-  // 2. RUN ONLY WHEN needsRefresh BECOMES TRUE (After saving new content)
   useEffect(() => {
     if (needsRefresh) {
       fetchHistory(activeFilter);
@@ -195,7 +189,6 @@ export default function HistoryScreen() {
   );
 }
 
-// ... styles remain unchanged (refer to previous snippets)
 const PRIMARY = "#16a34a";
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f7fff9", paddingHorizontal: 16 },

@@ -218,7 +218,6 @@ export default function Food() {
                   />
                 </View>
 
-                {/* INGREDIENTS SECTION */}
                 {ingredients.length > 0 && (
                   <Section title="Items Selected" icon="restaurant">
                     <View style={styles.ingredientsContainer}>

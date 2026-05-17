@@ -14,14 +14,13 @@ import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 
-// Theme
+
 const PRIMARY = "#22c55e";
 const DANGER = "#ef4444";
 const BACKGROUND = "#f8fafc";
 const TEXT_MAIN = "#1e293b";
 const TEXT_MUTED = "#64748b";
 
-/* ================= MENU ITEM ================= */
 
 const MenuItem = ({
   title,
@@ -51,7 +50,6 @@ const MenuItem = ({
   );
 };
 
-/* ================= SECTION ================= */
 
 const Section = ({ title, children }: any) => (
   <View style={styles.section}>
@@ -60,7 +58,6 @@ const Section = ({ title, children }: any) => (
   </View>
 );
 
-/* ================= PROFILE ================= */
 
 export default function Profile() {
   const router = useRouter();
@@ -91,7 +88,7 @@ export default function Profile() {
           </View>
         </TouchableOpacity>
 
-        {/* HEADER */}
+
         <View style={styles.header}>
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>
@@ -108,7 +105,6 @@ export default function Profile() {
           </Text>
         </View>
 
-        {/* ACCOUNT */}
         <Section title="Account">
           <MenuItem
             title="Personal Details"
@@ -123,7 +119,6 @@ export default function Profile() {
           />
         </Section>
 
-        {/* INFO */}
         <Section title="Information">
           <MenuItem
             title="About NutriVision"
@@ -138,7 +133,6 @@ export default function Profile() {
           />
         </Section>
 
-        {/* ACTIONS */}
         <Section title="Account Actions">
           <MenuItem
             title="Logout"
@@ -149,7 +143,6 @@ export default function Profile() {
           />
         </Section>
 
-        {/* FOOTER */}
         <View style={styles.footer}>
           <Text style={styles.version}>NutriVision v1.0.0</Text>
           <Text style={styles.tagline}>Smart AI Food Tracking</Text>
@@ -160,7 +153,6 @@ export default function Profile() {
   );
 }
 
-/* ================= STYLES ================= */
 
 const styles = StyleSheet.create({
   container: {
