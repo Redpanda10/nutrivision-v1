@@ -307,41 +307,6 @@ export default function Dashboard() {
         </View>
 
 
-        {/* <View style={styles.waterCard}>
-          <View style={styles.row}>
-            <Text style={styles.waterTitle}>
-              Water Intake
-            </Text>
-
-            {(totals.waterMl ?? 0) >=
-            (goals.waterMl ?? 3000) ? (
-              <Text style={styles.good}>
-                Hydrated
-              </Text>
-            ) : (
-              <Text style={styles.waterPending}>
-                Drink More
-              </Text>
-            )}
-          </View>
-
-          <Text style={styles.waterValue}>
-            {((totals.waterMl ?? 0) / 1000).toFixed(1)}L
-          </Text>
-
-          <ProgressBar
-            value={totals.waterMl ?? 0}
-            goal={goals.waterMl ?? 3000}
-            color={COLORS.water}
-          />
-
-          <Text style={styles.goalText}>
-            Goal:{" "}
-            {((goals.waterMl ?? 3000) / 1000).toFixed(1)}L
-          </Text>
-        </View> */}
-
-
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>
             Macro Distribution
